@@ -1,17 +1,7 @@
-# ActionRogueLikeCourse
+# Action Rogue Like (Course Project)
 In this repository you will find my version of the ActionRogueLike project that I made following the course of Tom Looman: **[Professional Game Development in C++ and Unreal Engine](https://courses.tomlooman.com/p/unrealengine-cpp?coupon_code=COMMUNITY15&src=github)**
 
 ![Course Header](https://www.tomlooman.com/wp-content/uploads/2021/09/actionroguelike_ue4_combatsample5.jpg)
-
-
-Game Assets: Licensed for use with the Unreal Engine only. Without a custom license you cannot use to create sequels, remasters, or otherwise emulate the original game or use the original game’s trademarks, character names, or other IP to advertise or name your game. (Unreal Engine EULA applies) (Please note this applies to the Game Assets that refer to Epic's Paragon, you can still use the project code and content to build your own Unreal Engine game)
-
-# Action Roguelike Game (Course Project)
-
-This project is part of the **[Professional Game Development in C++ and Unreal Engine](https://courses.tomlooman.com/p/unrealengine-cpp?coupon_code=COMMUNITY15&src=github)** Course where we build this entire game project step-by-step.
-
-![Course Header](https://www.tomlooman.com/wp-content/uploads/2021/09/actionroguelike_ue4_combatsample5.jpg)
-
 
 # Project Features
 - Third-person Action Character Movement
