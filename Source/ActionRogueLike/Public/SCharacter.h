@@ -18,6 +18,9 @@ public:
 	// Sets default values for this character's properties
 	ASCharacter();
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ProjectileClass;
+
 protected:
 
 	UPROPERTY(VisibleAnywhere)
@@ -30,6 +33,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	void MoveForward(float value);
+
+	void MoveRight(float value);
+
+	void PrimaryAttack();
 
 public:	
 	// Called every frame
