@@ -14,6 +14,9 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
+	MeshComp->SetSimulatePhysics(true);
+	MeshComp->SetCollisionProfileName(UCollisionProfile::PhysicsActor_ProfileName);
+	RootComponent = MeshComp;
 	RootComponent = MeshComp;
 
 	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>("RadialForce");
