@@ -15,12 +15,19 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+protected:
+
+	FTimerHandle TimerHandle_PrimaryAttack;
+
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* AttackAnim;
 
 protected:
 
@@ -41,6 +48,8 @@ protected:
 	void MoveRight(float value);
 
 	void PrimaryAttack();
+
+	void PrimaryAttack_TimeElapsed();
 
 	void PrimaryInteract();
 
