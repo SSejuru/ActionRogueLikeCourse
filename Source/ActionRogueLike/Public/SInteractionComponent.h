@@ -7,7 +7,7 @@
 #include "SInteractionComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ACTIONROGUELIKE_API USInteractionComponent : public UActorComponent
 {
 	GENERATED_BODY()

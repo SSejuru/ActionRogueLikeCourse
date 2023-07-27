@@ -13,7 +13,6 @@ USInteractionComponent::USInteractionComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
 	// ...
 }
 
@@ -24,7 +23,7 @@ void USInteractionComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
 }
 
 
@@ -63,9 +62,10 @@ void USInteractionComponent::PrimaryInteract()
 	FColor lineColor = bBlockingHit ? FColor::Green : FColor::Red;
 
 
-	for(FHitResult Hit : Hits)
+	for (FHitResult Hit : Hits)
 	{
 		AActor* HitActor = Hit.GetActor();
+
 		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 16, lineColor, false, 2.0f, 0, 2);
 
 		if (HitActor)
