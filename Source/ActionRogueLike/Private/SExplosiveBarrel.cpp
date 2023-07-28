@@ -10,13 +10,9 @@
 */
 ASExplosiveBarrel::ASExplosiveBarrel()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
 	MeshComp->SetSimulatePhysics(true);
 	MeshComp->SetCollisionProfileName(UCollisionProfile::PhysicsActor_ProfileName);
-	RootComponent = MeshComp;
 	RootComponent = MeshComp;
 
 	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>("RadialForce");
@@ -39,15 +35,6 @@ void ASExplosiveBarrel::BeginPlay()
 	
 }
 
-/**
- * Called every frame
- * @param DeltaTime Game time elapsed during last frame modified by the time dilation
-*/
-void ASExplosiveBarrel::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 
 void ASExplosiveBarrel::PostInitializeComponents()
 {
