@@ -120,7 +120,7 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 
 		bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, Start, End, CollisionObjectParams);
 
-		FColor lineColor = bBlockingHit ? FColor::Green : FColor::Red;
+		//FColor lineColor = bBlockingHit ? FColor::Green : FColor::Red;
 		//DrawDebugLine(GetWorld(), Start, End, lineColor, false, 2, 0, 2.0f);
 
 		FVector HitPosition = bBlockingHit ? Hit.ImpactPoint : End;

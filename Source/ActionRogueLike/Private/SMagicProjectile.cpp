@@ -3,9 +3,6 @@
 
 #include "SMagicProjectile.h"
 
-#include "Components/SphereComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
-#include "Particles/ParticleSystemComponent.h"
 
 // Sets Default Values
 ASMagicProjectile::ASMagicProjectile()
@@ -13,17 +10,6 @@ ASMagicProjectile::ASMagicProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
-	SphereComp->SetCollisionProfileName("Projectile");
-	RootComponent = SphereComp;
-
-	ParticleSystemComp = CreateDefaultSubobject<UParticleSystemComponent>("PariclesComp");
-	ParticleSystemComp->SetupAttachment(SphereComp);
-
-	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComp");
-	MovementComp->InitialSpeed = 1000.0f;
-	MovementComp->bRotationFollowsVelocity = true;
-	MovementComp->bInitialVelocityInLocalSpace = true;
 }
 
 
