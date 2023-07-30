@@ -106,9 +106,30 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 {
 	if (ensureAlways(ProjectileClass)) 
 	{
+		//Projectile Spawn location
 		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
-		FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
+		//Line trace from camera to world to find hit location
+		FHitResult Hit;
+		FVector Start = CameraComp->GetComponentLocation();
+		FVector End = Start + (CameraComp->GetForwardVector() * 1500.0f);
+
+		FCollisionObjectQueryParams CollisionObjectParams;
+		CollisionObjectParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldDynamic);
+		CollisionObjectParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic);
+
+		bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, Start, End, CollisionObjectParams);
+
+		FColor lineColor = bBlockingHit ? FColor::Green : FColor::Red;
+		//DrawDebugLine(GetWorld(), Start, End, lineColor, false, 2, 0, 2.0f);
+
+		FVector HitPosition = bBlockingHit ? Hit.ImpactPoint : End;
+
+		//Spawn Projectile in hand location with rotation to line trace hit position
+		FVector TargetDirection = HitPosition - HandLocation;
+		FRotator ProjectileRotation = FRotationMatrix::MakeFromX(TargetDirection).Rotator();
+
+		FTransform SpawnTM = FTransform(ProjectileRotation, HandLocation);
 
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

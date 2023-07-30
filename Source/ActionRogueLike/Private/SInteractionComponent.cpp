@@ -66,7 +66,7 @@ void USInteractionComponent::PrimaryInteract()
 	{
 		AActor* HitActor = Hit.GetActor();
 
-		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 16, lineColor, false, 2.0f, 0, 2);
+		//DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 16, lineColor, false, 2.0f, 0, 2);
 
 		if (HitActor)
 		{
@@ -80,5 +80,5 @@ void USInteractionComponent::PrimaryInteract()
 		}
 	}
 
-	DrawDebugLine(GetWorld(), EyeLocation, End, lineColor, false, 2, 0, 2.0f);
+	//DrawDebugLine(GetWorld(), EyeLocation, End, lineColor, false, 2, 0, 2.0f);
 }
