@@ -3,6 +3,8 @@
 
 #include "SMagicProjectile.h"
 
+#include "SAttributeComponent.h"
+
 
 // Sets Default Values
 ASMagicProjectile::ASMagicProjectile()
@@ -10,6 +12,7 @@ ASMagicProjectile::ASMagicProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	ProjectileDamage = 20;
 }
 
 
@@ -18,6 +21,20 @@ void ASMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ASMagicProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor)
+	{
+		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+		if (AttributeComp)
+		{
+			AttributeComp->ApplyHealthChange(-ProjectileDamage);
+			Destroy();
+		}
+	}
 }
 
 

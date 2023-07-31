@@ -29,12 +29,6 @@ void ASDashProjectile::StopProjectile()
 }
 
 
-void ASDashProjectile::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-	SphereComp->OnComponentHit.AddDynamic(this, &ASDashProjectile::OnComponentHit);
-}
-
 void ASDashProjectile::BeginPlay()
 {
 	Super::BeginPlay();
@@ -42,8 +36,11 @@ void ASDashProjectile::BeginPlay()
 	GetWorldTimerManager().SetTimer(TimerHandle_DelayedDetonation, this, &ASDashProjectile::StopProjectile, 0.2f);
 }
 
-void ASDashProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ASDashProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_DelayedDetonation);
 	StopProjectile();
 }
+
+

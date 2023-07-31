@@ -34,6 +34,18 @@ void ASProjectileBase::BeginPlay()
 
 }
 
+void ASProjectileBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASProjectileBase::OnComponentBeginOverlap);
+}
+
+void ASProjectileBase::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+}
+
+
 // Called every frame
 void ASProjectileBase::Tick(float DeltaTime)
 {

@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "SCharacter.generated.h"
 
+class USAttributeComponent;
 class ASProjectileBase;
 class USpringArmComponent;
 class UCameraComponent;
@@ -44,8 +45,12 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USInteractionComponent* InteractionComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components")
+	USAttributeComponent* AttributeComp;
+
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
