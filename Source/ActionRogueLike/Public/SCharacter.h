@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "SCharacter.generated.h"
 
+class ASProjectileBase;
 class USpringArmComponent;
 class UCameraComponent;
 class USInteractionComponent;
@@ -24,7 +25,13 @@ public:
 	ASCharacter();
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass;
+	TSubclassOf<ASProjectileBase> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<ASProjectileBase> PrimarySkillProjectile;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<ASProjectileBase> SecondarySkillProjectile;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim;
@@ -51,7 +58,17 @@ protected:
 
 	void PrimaryAttack_TimeElapsed();
 
+	void PrimarySkill();
+
+	void PrimarySkill_TimeElapsed();
+
+	void SecondarySkill();
+
+	void SecondarySkill_TimeElapsed();
+
 	void PrimaryInteract();
+
+	void ShootProjectile(TSubclassOf<ASProjectileBase> Projectile);
 
 public:	
 	// Called every frame

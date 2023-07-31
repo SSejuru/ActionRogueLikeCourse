@@ -30,7 +30,8 @@ ASProjectileBase::ASProjectileBase()
 void ASProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
+
 }
 
 // Called every frame
