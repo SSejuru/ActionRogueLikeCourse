@@ -146,34 +146,38 @@ void ASCharacter::SecondarySkill_TimeElapsed()
 
 void ASCharacter::ShootProjectile(TSubclassOf<ASProjectileBase> Projectile)
 {
-	//Projectile Spawn location
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	if (ensureAlways(Projectile)) 
+	{
+		//Projectile Spawn location
+		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
-	//Line trace from camera to world to find hit location
-	FHitResult Hit;
-	FVector Start = CameraComp->GetComponentLocation();
-	FVector End = Start + (CameraComp->GetForwardVector() * 1500.0f);
+		//Line trace from camera to world to find hit location
+		FHitResult Hit;
+		FVector Start = CameraComp->GetComponentLocation();
+		FVector End = Start + (GetControlRotation().Vector() * 2500.0f);
 
-	FCollisionObjectQueryParams CollisionObjectParams;
-	CollisionObjectParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldDynamic);
-	CollisionObjectParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic);
+		FCollisionObjectQueryParams CollisionObjectParams;
+		CollisionObjectParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+		CollisionObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		CollisionObjectParams.AddObjectTypesToQuery(ECC_Pawn);
 
-	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, Start, End, CollisionObjectParams);
+		bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, Start, End, CollisionObjectParams);
 
-	//FColor lineColor = bBlockingHit ? FColor::Green : FColor::Red;
-	//DrawDebugLine(GetWorld(), Start, End, lineColor, false, 2, 0, 2.0f);
+		//FColor lineColor = bBlockingHit ? FColor::Green : FColor::Red;
+		//DrawDebugLine(GetWorld(), Start, End, lineColor, false, 2, 0, 2.0f);
 
-	FVector HitPosition = bBlockingHit ? Hit.ImpactPoint : End;
+		FVector HitPosition = bBlockingHit ? Hit.ImpactPoint : End;
 
-	//Spawn Projectile in hand location with rotation to line trace hit position
-	FVector TargetDirection = HitPosition - HandLocation;
-	FRotator ProjectileRotation = FRotationMatrix::MakeFromX(TargetDirection).Rotator();
+		//Spawn Projectile in hand location with rotation to line trace hit position
+		FVector TargetDirection = HitPosition - HandLocation;
+		FRotator ProjectileRotation = FRotationMatrix::MakeFromX(TargetDirection).Rotator();
 
-	FTransform SpawnTM = FTransform(ProjectileRotation, HandLocation);
+		FTransform SpawnTM = FTransform(ProjectileRotation, HandLocation);
 
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this;
 
-	GetWorld()->SpawnActor<AActor>(Projectile, SpawnTM, SpawnParams);
+		GetWorld()->SpawnActor<AActor>(Projectile, SpawnTM, SpawnParams);
+	}
 }

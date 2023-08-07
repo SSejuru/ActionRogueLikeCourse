@@ -4,6 +4,7 @@
 #include "SMagicProjectile.h"
 
 #include "SAttributeComponent.h"
+#include "Components/SphereComponent.h"
 
 
 // Sets Default Values
@@ -12,6 +13,8 @@ ASMagicProjectile::ASMagicProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	SphereComp->SetSphereRadius(20.0f);
+	InitialLifeSpan = 10.0f;
 	ProjectileDamage = 20;
 }
 
@@ -32,9 +35,16 @@ void ASMagicProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedC
 		if (AttributeComp)
 		{
 			AttributeComp->ApplyHealthChange(-ProjectileDamage);
-			Destroy();
+			Explode();
 		}
 	}
+}
+
+void ASMagicProjectile::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnComponentBeginOverlap);
 }
 
 

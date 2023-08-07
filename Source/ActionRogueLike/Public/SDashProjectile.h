@@ -20,18 +20,20 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dash Data")
-	UParticleSystem* ExplosionParticles;
+	UPROPERTY(EditDefaultsOnly, Category= "Teleport")
+	float TeleportDelay;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
+	float DetonateDelay;
 
 	FTimerHandle TimerHandle_DelayedDetonation;
 
-	void TeleportInstigator();
+	virtual void Explode_Implementation() override;
 
-	void StopProjectile();
+	void TeleportInstigator();
 
 	virtual void BeginPlay() override;
 
 private:
 
-	virtual void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 };
