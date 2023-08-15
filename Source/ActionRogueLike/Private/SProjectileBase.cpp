@@ -3,6 +3,7 @@
 
 #include "SProjectileBase.h"
 
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -17,6 +18,9 @@ ASProjectileBase::ASProjectileBase()
 
 	ParticleSystemComp = CreateDefaultSubobject<UParticleSystemComponent>("PariclesComp");
 	ParticleSystemComp->SetupAttachment(SphereComp);
+
+	AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
+	AudioComp->SetupAttachment(SphereComp);
 
 	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComp");
 	MovementComp->InitialSpeed = 8000.0f;

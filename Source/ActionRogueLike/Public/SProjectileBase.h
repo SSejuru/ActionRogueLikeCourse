@@ -20,6 +20,9 @@ public:
 
 protected:
 
+	UPROPERTY(VisibleAnywhere, Category = "Audio")
+	UAudioComponent* AudioComp;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
 	UParticleSystem* ImpactVFX;
 

@@ -4,7 +4,10 @@
 #include "SMagicProjectile.h"
 
 #include "SAttributeComponent.h"
+#include "SCharacter.h"
+#include "Blueprint/UserWidget.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets Default Values
@@ -23,11 +26,16 @@ ASMagicProjectile::ASMagicProjectile()
 void ASMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	ASCharacter* CharacterOwner = Cast<ASCharacter>(GetInstigator());
+
+	if(CharacterOwner)
+		UGameplayStatics::SpawnEmitterAttached(SpawnParticles, CharacterOwner->GetMesh(), "Muzzle_01");
 }
 
-void ASMagicProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ASMagicProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != GetInstigator())
 	{
@@ -39,6 +47,21 @@ void ASMagicProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedC
 		}
 	}
 }
+
+void ASMagicProjectile::Explode_Implementation()
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, GetActorLocation(), GetActorRotation());
+
+	AActor* InstigatorActor = GetInstigator();
+
+	if (InstigatorActor)
+	{
+		UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShake, InstigatorActor->GetActorLocation(), 0.0f, 500.0f);
+	}
+
+	Super::Explode_Implementation();
+}
+
 
 void ASMagicProjectile::PostInitializeComponents()
 {

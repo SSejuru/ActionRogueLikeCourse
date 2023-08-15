@@ -19,14 +19,25 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, Category= "Damage")
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	USoundBase* ImpactSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Damage")
 	float ProjectileDamage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UParticleSystem* SpawnParticles;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	TSubclassOf<UCameraShakeBase> CameraShake;
 
 	//Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	virtual void Explode_Implementation() override;
 
 	virtual void PostInitializeComponents() override;
 public:

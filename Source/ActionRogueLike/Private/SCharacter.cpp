@@ -10,11 +10,12 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("Spring Arm Component");
@@ -32,11 +33,17 @@ ASCharacter::ASCharacter()
 	bUseControllerRotationYaw = false;
 }
 
+void ASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
+}
+
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -108,7 +115,7 @@ void ASCharacter::PrimaryAttack()
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
-	if (ensureAlways(ProjectileClass)) 
+	if (ensureAlways(ProjectileClass))
 	{
 		ShootProjectile(ProjectileClass);
 	}
@@ -146,7 +153,7 @@ void ASCharacter::SecondarySkill_TimeElapsed()
 
 void ASCharacter::ShootProjectile(TSubclassOf<ASProjectileBase> Projectile)
 {
-	if (ensureAlways(Projectile)) 
+	if (ensureAlways(Projectile))
 	{
 		//Projectile Spawn location
 		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
@@ -154,7 +161,8 @@ void ASCharacter::ShootProjectile(TSubclassOf<ASProjectileBase> Projectile)
 		//Line trace from camera to world to find hit location
 		FHitResult Hit;
 		FVector Start = CameraComp->GetComponentLocation();
-		FVector End = Start + (GetControlRotation().Vector() * 2500.0f);
+		FVector Forward = GetControlRotation().Vector();
+		FVector End = Start + (Forward * 2500.0f);
 
 		FCollisionObjectQueryParams CollisionObjectParams;
 		CollisionObjectParams.AddObjectTypesToQuery(ECC_WorldDynamic);
@@ -179,5 +187,21 @@ void ASCharacter::ShootProjectile(TSubclassOf<ASProjectileBase> Projectile)
 		SpawnParams.Instigator = this;
 
 		GetWorld()->SpawnActor<AActor>(Projectile, SpawnTM, SpawnParams);
+	}
+}
+
+void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
+	float Delta)
+{
+	if (NewHealth <= 0.0f)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		DisableInput(PlayerController);
+	}
+	else {
+		FLinearColor HitFlashColor = Delta > 0 ? FLinearColor::Green : FLinearColor::Red;
+		USkeletalMeshComponent* MeshComp = GetMesh();
+		MeshComp->SetVectorParameterValueOnMaterials("HitFlashColor", UKismetMathLibrary::Conv_LinearColorToVector(HitFlashColor));
+		MeshComp->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
 	}
 }

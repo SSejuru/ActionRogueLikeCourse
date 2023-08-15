@@ -75,6 +75,11 @@ protected:
 
 	void ShootProjectile(TSubclassOf<ASProjectileBase> Projectile);
 
+	virtual void PostInitializeComponents() override;
+
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

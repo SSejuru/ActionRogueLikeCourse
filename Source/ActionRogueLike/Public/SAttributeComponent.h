@@ -31,6 +31,12 @@ protected:
 
 public:
 
+	UFUNCTION()
+	bool IsMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsAlive() const;
+
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
