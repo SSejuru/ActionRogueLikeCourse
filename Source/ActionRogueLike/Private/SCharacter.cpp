@@ -167,7 +167,7 @@ void ASCharacter::ShootProjectile(TSubclassOf<ASProjectileBase> Projectile)
 		FCollisionObjectQueryParams CollisionObjectParams;
 		CollisionObjectParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 		CollisionObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		CollisionObjectParams.AddObjectTypesToQuery(ECC_Pawn);
+		CollisionObjectParams.AddObjectTypesToQuery(ECC_Pawn); // This is causing an error when moving diagonally
 
 		bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, Start, End, CollisionObjectParams);
 

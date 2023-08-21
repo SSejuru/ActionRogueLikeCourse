@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "SAICharacter.generated.h"
 
+class USAttributeComponent;
 class UPawnSensingComponent;
 
 UCLASS()
@@ -25,8 +26,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category= "AI")
 	FName TargetActorKey;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USAttributeComponent* AttributeComp;
+
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
+
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 
 	virtual void PostInitializeComponents() override;
 

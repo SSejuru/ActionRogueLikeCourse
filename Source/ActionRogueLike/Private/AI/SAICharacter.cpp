@@ -5,6 +5,7 @@
 
 #include "AIController.h"
 #include "DrawDebugHelpers.h"
+#include "SAttributeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/PawnSensingComponent.h"
 
@@ -12,6 +13,11 @@
 ASAICharacter::ASAICharacter()
 {
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
+
+	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
 }
 
 void ASAICharacter::PostInitializeComponents()
@@ -32,6 +38,22 @@ void ASAICharacter::OnPawnSeen(APawn* Pawn)
 
 		DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
 	}
+}
+
+void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
+	float Delta)
+{
+	/*if (NewHealth <= 0.0f)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		DisableInput(PlayerController);
+	}
+	else {
+		FLinearColor HitFlashColor = Delta > 0 ? FLinearColor::Green : FLinearColor::Red;
+		USkeletalMeshComponent* MeshComp = GetMesh();
+		MeshComp->SetVectorParameterValueOnMaterials("HitFlashColor", UKismetMathLibrary::Conv_LinearColorToVector(HitFlashColor));
+		MeshComp->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+	}*/
 }
 
 
