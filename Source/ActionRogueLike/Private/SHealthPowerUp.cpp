@@ -19,7 +19,7 @@ void ASHealthPowerUp::Interact_Implementation(APawn* InstigatorPawn)
 	if (AttributeComp && !AttributeComp->IsMaxHealth())
 	{
 		Super::Interact_Implementation(InstigatorPawn);
-		AttributeComp->ApplyHealthChange(HealAmmount);
+		AttributeComp->ApplyHealthChange(this, HealAmmount);
 	}
 
 }

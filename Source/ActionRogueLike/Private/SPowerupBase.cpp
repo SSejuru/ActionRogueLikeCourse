@@ -15,12 +15,13 @@ ASPowerupBase::ASPowerupBase()
 
 	ReactivationTime = 10.0f;
 	bIsPowerupActive = false;
+	bCanActivateTroughCollision = false;
 }
 
 void ASPowerupBase::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(OtherActor)
+	if(OtherActor && bCanActivateTroughCollision)
 	{
 		APawn* Pawn = Cast<APawn>(OtherActor);
 		if(Pawn)

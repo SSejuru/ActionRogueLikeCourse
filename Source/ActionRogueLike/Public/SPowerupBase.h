@@ -18,6 +18,9 @@ public:
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, Category = "Power Up")
+	bool bCanActivateTroughCollision;
+
 	bool bIsPowerupActive;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Power Up")

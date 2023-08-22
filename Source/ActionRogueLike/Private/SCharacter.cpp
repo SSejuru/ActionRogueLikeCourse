@@ -164,12 +164,19 @@ void ASCharacter::ShootProjectile(TSubclassOf<ASProjectileBase> Projectile)
 		FVector Forward = GetControlRotation().Vector();
 		FVector End = Start + (Forward * 2500.0f);
 
+		FCollisionShape Shape;
+		Shape.SetSphere(15.0f);
+
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+
 		FCollisionObjectQueryParams CollisionObjectParams;
+		
 		CollisionObjectParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 		CollisionObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		CollisionObjectParams.AddObjectTypesToQuery(ECC_Pawn); // This is causing an error when moving diagonally
+		CollisionObjectParams.AddObjectTypesToQuery(ECC_Pawn); 
 
-		bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, Start, End, CollisionObjectParams);
+		bool bBlockingHit = GetWorld()->SweepSingleByObjectType(Hit, Start, End, FQuat::Identity, CollisionObjectParams, Shape, Params);
 
 		//FColor lineColor = bBlockingHit ? FColor::Green : FColor::Red;
 		//DrawDebugLine(GetWorld(), Start, End, lineColor, false, 2, 0, 2.0f);
