@@ -38,6 +38,9 @@ protected:
 
 public:
 
+	UFUNCTION(BlueprintCallable)
+	bool Kill(AActor* InstigatorActor);
+
 	UFUNCTION()
 	bool IsMaxHealth() const;
 
