@@ -80,6 +80,11 @@ void ASCharacter::HealSelf(float Amount /* = 100 */)
 	AttributeComp->ApplyHealthChange(this, Amount);
 }
 
+void ASCharacter::KillSelf()
+{
+	AttributeComp->ApplyHealthChange(this, -AttributeComp->GetMaxHealth());
+}
+
 
 void ASCharacter::MoveForward(float value)
 {

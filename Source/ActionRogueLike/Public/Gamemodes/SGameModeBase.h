@@ -40,6 +40,9 @@ protected:
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
 
+	UFUNCTION()
+	void RespawnPlayerElapsed(AController* Controller);
+
 public:
 
 	ASGameModeBase();
@@ -50,4 +53,5 @@ public:
 	void KillAI();
 
 
+	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
 };
