@@ -87,6 +87,14 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 			SetLifeSpan(10.0f);
 		}
 	}
+	else
+	{
+		if (ActiveHealthBar && NewHealth == AttributeComp->GetMaxHealth())
+		{
+			ActiveHealthBar->RemoveFromParent();
+			ActiveHealthBar = nullptr;
+		}
+	}
 }
 
 
