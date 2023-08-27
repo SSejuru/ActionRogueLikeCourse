@@ -6,6 +6,8 @@
 #include "DrawDebugHelpers.h"
 #include "SGameplayInterface.h"
 
+static TAutoConsoleVariable<bool> CVarDrawInteractionDebug(TEXT("s.DrawInteractionDebug"), false, TEXT("Used for debugging the interaction raycast"), ECVF_Default);
+
 
 // Sets default values for this component's properties
 USInteractionComponent::USInteractionComponent()
@@ -37,6 +39,8 @@ void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void USInteractionComponent::PrimaryInteract()
 {
+	bool bDebugDraw = CVarDrawInteractionDebug.GetValueOnGameThread();
+
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 
@@ -48,8 +52,6 @@ void USInteractionComponent::PrimaryInteract()
 
 	FVector End = EyeLocation + (EyeRotation.Vector() * 500);
 
-	//FHitResult Hit;
-	//bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
 
 	float Radius = 30.0f;
 
@@ -66,7 +68,8 @@ void USInteractionComponent::PrimaryInteract()
 	{
 		AActor* HitActor = Hit.GetActor();
 
-		//DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 16, lineColor, false, 2.0f, 0, 2);
+		if (bDebugDraw)
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 16, lineColor, false, 2.0f, 0, 2);
 
 		if (HitActor)
 		{
@@ -80,5 +83,6 @@ void USInteractionComponent::PrimaryInteract()
 		}
 	}
 
-	//DrawDebugLine(GetWorld(), EyeLocation, End, lineColor, false, 2, 0, 2.0f);
+	if(bDebugDraw)
+		DrawDebugLine(GetWorld(), EyeLocation, End, lineColor, false, 2, 0, 2.0f);
 }
