@@ -27,11 +27,6 @@ ASMagicProjectile::ASMagicProjectile()
 void ASMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ASCharacter* CharacterOwner = Cast<ASCharacter>(GetInstigator());
-
-	if(CharacterOwner)
-		UGameplayStatics::SpawnEmitterAttached(SpawnParticles, CharacterOwner->GetMesh(), "Muzzle_01");
 }
 
 void ASMagicProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent,

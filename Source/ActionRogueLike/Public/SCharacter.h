@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "SCharacter.generated.h"
 
+class USActionComponent;
 class USAttributeComponent;
 class ASProjectileBase;
 class USpringArmComponent;
@@ -17,9 +18,7 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-protected:
 
-	FTimerHandle TimerHandle_PrimaryAttack;
 
 public:
 	// Sets default values for this character's properties
@@ -33,9 +32,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<ASProjectileBase> SecondarySkillProjectile;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	UAnimMontage* AttackAnim;
 
 protected:
 
@@ -51,6 +47,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components")
 	USAttributeComponent* AttributeComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USActionComponent* ActionComp;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -59,21 +57,17 @@ protected:
 
 	void MoveRight(float value);
 
-	void PrimaryAttack();
+	void SprintStart();
 
-	void PrimaryAttack_TimeElapsed();
+	void SprintStop();
+
+	void PrimaryAttack();
 
 	void PrimarySkill();
 
-	void PrimarySkill_TimeElapsed();
-
 	void SecondarySkill();
 
-	void SecondarySkill_TimeElapsed();
-
 	void PrimaryInteract();
-
-	void ShootProjectile(TSubclassOf<ASProjectileBase> Projectile);
 
 	virtual void PostInitializeComponents() override;
 

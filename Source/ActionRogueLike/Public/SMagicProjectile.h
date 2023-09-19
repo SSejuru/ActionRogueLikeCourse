@@ -26,9 +26,6 @@ protected:
 	float ProjectileDamage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	UParticleSystem* SpawnParticles;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TSubclassOf<UCameraShakeBase> CameraShake;
 
 	//Called when the game starts or when spawned

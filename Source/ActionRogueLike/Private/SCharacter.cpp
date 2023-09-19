@@ -4,6 +4,7 @@
 #include "SCharacter.h"
 
 #include "DrawDebugHelpers.h"
+#include "SActionComponent.h"
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
 #include "SProjectileBase.h"
@@ -27,6 +28,7 @@ ASCharacter::ASCharacter()
 
 	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
+	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
@@ -73,6 +75,9 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("PrimarySkill", IE_Pressed, this, &ASCharacter::PrimarySkill);
 	PlayerInputComponent->BindAction("SecondarySkill", IE_Pressed, this, &ASCharacter::SecondarySkill);
 
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::SprintStart);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::SprintStop);
+
 }
 
 void ASCharacter::HealSelf(float Amount /* = 100 */)
@@ -111,6 +116,16 @@ void ASCharacter::MoveRight(float value)
 	AddMovementInput(RightVector, value);
 }
 
+void ASCharacter::SprintStart()
+{
+	ActionComp->StartActionByName(this, "Sprint");
+}
+
+void ASCharacter::SprintStop()
+{
+	ActionComp->StopActionByName(this, "Sprint");
+}
+
 void ASCharacter::PrimaryInteract()
 {
 	InteractionComp->PrimaryInteract();
@@ -118,93 +133,19 @@ void ASCharacter::PrimaryInteract()
 
 void ASCharacter::PrimaryAttack()
 {
-	PlayAnimMontage(AttackAnim);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.2f);
+	ActionComp->StartActionByName(this, "PrimaryAttack");
 }
 
-void ASCharacter::PrimaryAttack_TimeElapsed()
-{
-	if (ensureAlways(ProjectileClass))
-	{
-		ShootProjectile(ProjectileClass);
-	}
-}
 
 void ASCharacter::PrimarySkill()
 {
-	PlayAnimMontage(AttackAnim);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimarySkill_TimeElapsed, 0.2f);
+	ActionComp->StartActionByName(this, "BlackHole");
 }
 
-void ASCharacter::PrimarySkill_TimeElapsed()
-{
-	if (ensureAlways(PrimarySkillProjectile))
-	{
-		ShootProjectile(PrimarySkillProjectile);
-	}
-}
 
 void ASCharacter::SecondarySkill()
 {
-	PlayAnimMontage(AttackAnim);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::SecondarySkill_TimeElapsed, 0.2f);
-}
-
-void ASCharacter::SecondarySkill_TimeElapsed()
-{
-	if (ensureAlways(SecondarySkillProjectile))
-	{
-		ShootProjectile(SecondarySkillProjectile);
-	}
-}
-
-void ASCharacter::ShootProjectile(TSubclassOf<ASProjectileBase> Projectile)
-{
-	if (ensureAlways(Projectile))
-	{
-		//Projectile Spawn location
-		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
-		//Line trace from camera to world to find hit location
-		FHitResult Hit;
-		FVector Start = CameraComp->GetComponentLocation();
-		FVector Forward = GetControlRotation().Vector();
-		FVector End = Start + (Forward * 2500.0f);
-
-		FCollisionShape Shape;
-		Shape.SetSphere(15.0f);
-
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(this);
-
-		FCollisionObjectQueryParams CollisionObjectParams;
-		
-		CollisionObjectParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-		CollisionObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		CollisionObjectParams.AddObjectTypesToQuery(ECC_Pawn); 
-
-		bool bBlockingHit = GetWorld()->SweepSingleByObjectType(Hit, Start, End, FQuat::Identity, CollisionObjectParams, Shape, Params);
-
-		//FColor lineColor = bBlockingHit ? FColor::Green : FColor::Red;
-		//DrawDebugLine(GetWorld(), Start, End, lineColor, false, 2, 0, 2.0f);
-
-		FVector HitPosition = bBlockingHit ? Hit.ImpactPoint : End;
-
-		//Spawn Projectile in hand location with rotation to line trace hit position
-		FVector TargetDirection = HitPosition - HandLocation;
-		FRotator ProjectileRotation = FRotationMatrix::MakeFromX(TargetDirection).Rotator();
-
-		FTransform SpawnTM = FTransform(ProjectileRotation, HandLocation);
-
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = this;
-
-		GetWorld()->SpawnActor<AActor>(Projectile, SpawnTM, SpawnParams);
-	}
+	ActionComp->StartActionByName(this, "Dash");
 }
 
 void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
