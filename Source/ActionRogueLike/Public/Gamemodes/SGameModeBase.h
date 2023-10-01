@@ -21,6 +21,9 @@ class ACTIONROGUELIKE_API ASGameModeBase : public AGameModeBase
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	int32 CreditsPerKill;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TSubclassOf<AActor> MinionClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")

@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "SProjectileBase.h"
 #include "GameFramework/Actor.h"
+#include <GameplayTagContainer.h>
 #include "SMagicProjectile.generated.h"
+
+class USActionEffect;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASMagicProjectile : public ASProjectileBase
@@ -19,6 +22,12 @@ public:
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	TSubclassOf<USActionEffect> EffectToApply;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FGameplayTag ParryTag;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Audio")
 	USoundBase* ImpactSound;
 
@@ -27,6 +36,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TSubclassOf<UCameraShakeBase> CameraShake;
+
+	bool bWasParried;
 
 	//Called when the game starts or when spawned
 	virtual void BeginPlay() override;

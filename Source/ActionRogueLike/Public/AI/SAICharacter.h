@@ -9,6 +9,7 @@
 class USAttributeComponent;
 class UPawnSensingComponent;
 class USWorldUserWidget;
+class USActionComponent;
 
 
 UCLASS()
@@ -48,5 +49,8 @@ protected:
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 
 	virtual void PostInitializeComponents() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USActionComponent* ActionComp;
 
 };

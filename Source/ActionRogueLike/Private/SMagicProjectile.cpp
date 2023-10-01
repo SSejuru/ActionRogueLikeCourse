@@ -9,6 +9,9 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "SActionComponent.h"
+#include "SActionEffect.h"
 
 
 // Sets Default Values
@@ -35,16 +38,25 @@ void ASMagicProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedC
 {
 	if (OtherActor && OtherActor != GetInstigator())
 	{
-		/*USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
-		if (AttributeComp)
+		USActionComponent* ActionComp = Cast<USActionComponent>(OtherActor->GetComponentByClass(USActionComponent::StaticClass()));
+
+		if (ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag) && !bWasParried) 
 		{
-			AttributeComp->ApplyHealthChange(GetInstigator(), -ProjectileDamage);
-			Explode();
-		}*/
+			MovementComp->Velocity = -MovementComp->Velocity;
+
+			SetInstigator(Cast<APawn>(OtherActor));
+
+			bWasParried = true;
+			return;
+		}
 
 		if(USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, ProjectileDamage, SweepResult))
 		{
 			Explode();
+
+			if (ActionComp) {
+				ActionComp->AddAction(GetInstigator(), EffectToApply);
+			}
 		}
 	}
 }

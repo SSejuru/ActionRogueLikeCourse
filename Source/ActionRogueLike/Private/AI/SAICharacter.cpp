@@ -13,6 +13,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "SActionComponent.h"
 
 // Sets default values
 ASAICharacter::ASAICharacter()
@@ -22,6 +23,8 @@ ASAICharacter::ASAICharacter()
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
 	GetMesh()->SetGenerateOverlapEvents(true);
