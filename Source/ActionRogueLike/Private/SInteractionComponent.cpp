@@ -5,6 +5,7 @@
 
 #include "DrawDebugHelpers.h"
 #include "SGameplayInterface.h"
+#include "SWorldUserWidget.h"
 
 static TAutoConsoleVariable<bool> CVarDrawInteractionDebug(TEXT("s.DrawInteractionDebug"), false, TEXT("Used for debugging the interaction raycast"), ECVF_Default);
 
@@ -16,7 +17,12 @@ USInteractionComponent::USInteractionComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	// ...
+
+	TraceDistance = 500.0f;
+	TraceRadius = 30.0f;
+	CollisionChannel = ECC_WorldDynamic;
 }
+
 
 
 // Called when the game starts
@@ -34,15 +40,16 @@ void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	FindBestInteractable();
 }
 
-void USInteractionComponent::PrimaryInteract()
+
+void USInteractionComponent::FindBestInteractable()
 {
 	bool bDebugDraw = CVarDrawInteractionDebug.GetValueOnGameThread();
 
 	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(CollisionChannel);
 
 	AActor* MyOwner = GetOwner();
 
@@ -50,39 +57,70 @@ void USInteractionComponent::PrimaryInteract()
 	FRotator EyeRotation;
 	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
-	FVector End = EyeLocation + (EyeRotation.Vector() * 500);
+	FVector End = EyeLocation + (EyeRotation.Vector() * TraceDistance);
 
-
-	float Radius = 30.0f;
 
 	TArray<FHitResult> Hits;
 	FCollisionShape Shape;
-	Shape.SetSphere(Radius);
+	Shape.SetSphere(TraceRadius);
 
 	bool bBlockingHit = GetWorld()->SweepMultiByObjectType(Hits, EyeLocation, End, FQuat::Identity, ObjectQueryParams, Shape);
 
 	FColor lineColor = bBlockingHit ? FColor::Green : FColor::Red;
 
+	//Clear ref before trying to fill
+	FocusedActor = nullptr;
 
 	for (FHitResult Hit : Hits)
 	{
 		AActor* HitActor = Hit.GetActor();
 
 		if (bDebugDraw)
-			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 16, lineColor, false, 2.0f, 0, 2);
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, TraceRadius, 16, lineColor, false, 2.0f, 0, 2);
 
 		if (HitActor)
 		{
 			if (HitActor->Implements<USGameplayInterface>())
 			{
-				APawn* MyPawn = Cast<APawn>(MyOwner);
-
-				ISGameplayInterface::Execute_Interact(HitActor, MyPawn);
+				FocusedActor = HitActor;
 				break;
 			}
 		}
 	}
 
-	if(bDebugDraw)
+	if (FocusedActor) 
+	{
+		if(DefaultWidgetInstance == nullptr && ensure(DefaultWidgetClass))
+		{
+			DefaultWidgetInstance =  CreateWidget<USWorldUserWidget>(GetWorld(), DefaultWidgetClass);
+		}
+
+		if (DefaultWidgetInstance) 
+		{
+			DefaultWidgetInstance->AttachedActor = FocusedActor;
+
+			if(!DefaultWidgetInstance->IsInViewport())
+				DefaultWidgetInstance->AddToViewport();
+		}
+	}
+	else
+	{
+		if (DefaultWidgetInstance) {
+			DefaultWidgetInstance->RemoveFromParent();
+		}
+	}
+
+	if (bDebugDraw)
 		DrawDebugLine(GetWorld(), EyeLocation, End, lineColor, false, 2, 0, 2.0f);
+}
+
+void USInteractionComponent::PrimaryInteract()
+{
+	if (FocusedActor == nullptr) { return; }
+
+	AActor* MyOwner = GetOwner();
+	APawn* MyPawn = Cast<APawn>(MyOwner);
+
+
+	ISGameplayInterface::Execute_Interact(FocusedActor, MyPawn);
 }
