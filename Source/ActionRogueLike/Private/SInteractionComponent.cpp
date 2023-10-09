@@ -40,8 +40,16 @@ void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FindBestInteractable();
+	APawn* MyPawn = Cast<APawn>(GetOwner());
+	if (MyPawn)
+	{
+		if (MyPawn->IsLocallyControlled()) 
+		{
+			FindBestInteractable();
+		}
+	}
 }
+
 
 
 void USInteractionComponent::FindBestInteractable()
@@ -88,18 +96,18 @@ void USInteractionComponent::FindBestInteractable()
 		}
 	}
 
-	if (FocusedActor) 
+	if (FocusedActor)
 	{
-		if(DefaultWidgetInstance == nullptr && ensure(DefaultWidgetClass))
+		if (DefaultWidgetInstance == nullptr && ensure(DefaultWidgetClass))
 		{
-			DefaultWidgetInstance =  CreateWidget<USWorldUserWidget>(GetWorld(), DefaultWidgetClass);
+			DefaultWidgetInstance = CreateWidget<USWorldUserWidget>(GetWorld(), DefaultWidgetClass);
 		}
 
-		if (DefaultWidgetInstance) 
+		if (DefaultWidgetInstance)
 		{
 			DefaultWidgetInstance->AttachedActor = FocusedActor;
 
-			if(!DefaultWidgetInstance->IsInViewport())
+			if (!DefaultWidgetInstance->IsInViewport())
 				DefaultWidgetInstance->AddToViewport();
 		}
 	}
@@ -116,11 +124,17 @@ void USInteractionComponent::FindBestInteractable()
 
 void USInteractionComponent::PrimaryInteract()
 {
-	if (FocusedActor == nullptr) { return; }
+	ServerInteract(FocusedActor);
+}
+
+
+void USInteractionComponent::ServerInteract_Implementation(AActor* InFocus)
+{
+	if (InFocus == nullptr) { return; }
 
 	AActor* MyOwner = GetOwner();
 	APawn* MyPawn = Cast<APawn>(MyOwner);
 
 
-	ISGameplayInterface::Execute_Interact(FocusedActor, MyPawn);
+	ISGameplayInterface::Execute_Interact(InFocus, MyPawn);
 }

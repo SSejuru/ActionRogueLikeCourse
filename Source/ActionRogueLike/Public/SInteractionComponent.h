@@ -23,10 +23,16 @@ public:
 
 protected:
 
-	UPROPERTY()
-	AActor* FocusedActor;
+	//Reliable - Will always arrive, eventually. Request will be re-sent unless an acknowledgment was recieved
+	//Unreliable - Not guaranteed, packet can get lost and won't entry
+
+	UFUNCTION(Server, Reliable)
+	void ServerInteract(AActor* InFocus);
 
 	void FindBestInteractable();
+
+	UPROPERTY()
+	AActor* FocusedActor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Trace")
 	float TraceDistance;

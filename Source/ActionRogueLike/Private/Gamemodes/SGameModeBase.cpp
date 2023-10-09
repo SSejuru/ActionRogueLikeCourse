@@ -10,7 +10,7 @@
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "SPlayerState.h"
 
-static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("s.SpawnBots"), true, TEXT("Enable spawning of bots via timer"), ECVF_Cheat);
+static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("s.SpawnBots"), false, TEXT("Enable spawning of bots via timer"), ECVF_Cheat);
 
 ASGameModeBase::ASGameModeBase()
 {

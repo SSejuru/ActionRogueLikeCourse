@@ -20,15 +20,21 @@ class ACTIONROGUELIKE_API ASItemChest : public AActor, public ISGameplayInterfac
 
 public:
 
-	/**
-	 * Sets default values for this actor's properties
-	*/
 	ASItemChest();
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	float TargetPitch;
 
 protected:
+
+	UPROPERTY(ReplicatedUsing = "OnRep_LidOpened") //RepNotify
+	bool bLidOpened;
+
+	UFUNCTION(BlueprintCallable)
+	void OnRep_LidOpened();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Animation")
+	void AnimateLid(bool bOpenChest);
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* BaseMesh;
