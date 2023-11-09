@@ -16,6 +16,8 @@ ASPowerupBase::ASPowerupBase()
 	ReactivationTime = 10.0f;
 	bIsPowerupActive = false;
 	bCanActivateTroughCollision = false;
+
+	SetReplicates(true);
 }
 
 void ASPowerupBase::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -30,7 +32,6 @@ void ASPowerupBase::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompo
 		}
 	}
 }
-
 
 void ASPowerupBase::PostInitializeComponents()
 {

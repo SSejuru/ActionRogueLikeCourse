@@ -25,9 +25,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	float TargetPitch;
 
+	void OnActorLoaded_Implementation() override;
+
 protected:
 
-	UPROPERTY(ReplicatedUsing = "OnRep_LidOpened") //RepNotify
+	UPROPERTY(ReplicatedUsing = "OnRep_LidOpened", BlueprintReadOnly, SaveGame) //RepNotify
 	bool bLidOpened;
 
 	UFUNCTION(BlueprintCallable)

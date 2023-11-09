@@ -27,14 +27,16 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes", Replicated)
 	float Health;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes", Replicated)
 	float MaxHealth;
 
 	//HealthMax, Stamina, Strength, etc.
 
+	UFUNCTION(NetMulticast, Reliable) //@FIXME: Mark as unreliable once the player death state is removed from SCharacter
+	void MulticastHealthChanged(AActor* InstigatorActor, float NewHealth, float Delta);
 
 public:
 

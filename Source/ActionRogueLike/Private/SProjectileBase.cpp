@@ -27,6 +27,8 @@ ASProjectileBase::ASProjectileBase()
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;
 	MovementComp->ProjectileGravityScale = 0.0f;
+
+	SetReplicates(true);
 }
 
 

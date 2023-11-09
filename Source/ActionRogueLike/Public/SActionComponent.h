@@ -37,15 +37,26 @@ public:
 
 protected:
 
+	UFUNCTION(Server, Reliable)
+	void ServerStartAction(AActor* Instigator, FName ActionName);
+
+	UFUNCTION(Server, Reliable)
+	void ServerStopAction(AActor* Instigator, FName ActionName);
+
 	UPROPERTY(EditAnywhere, Category = "Actions")
 	TArray<TSubclassOf<USAction>> DefaultActions;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TArray<USAction*> Actions;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void BeginPlay() override;
 
-public:	
+public:
+
+	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 		

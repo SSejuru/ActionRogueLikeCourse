@@ -9,6 +9,20 @@
 
 class USActionComponent;
 
+USTRUCT()
+struct FActionRepData
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	bool bIsRunning;
+
+	UPROPERTY()
+	AActor* Instigator;
+};
+
 /**
  * 
  */
@@ -18,6 +32,9 @@ class ACTIONROGUELIKE_API USAction : public UObject
 	GENERATED_BODY()
 
 protected:
+
+	UPROPERTY(Replicated)
+	USActionComponent* ActionComp;
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	USActionComponent* GetOwningComponent() const;
@@ -30,9 +47,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 	FGameplayTagContainer BlockedTags;
 
-	bool bIsRunning;
+	UPROPERTY(ReplicatedUsing = "OnRep_RepData")
+	FActionRepData RepData;
+
+	UFUNCTION()
+	void OnRep_RepData();
 
 public:
+
+	void Initialize(USActionComponent* NewActionComp);
 
 	//Start immediately when added to action component
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
@@ -54,6 +77,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	FName ActionName;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UWorld* GetWorld() const override;
+
+	virtual bool IsSupportedForNetworking() const override
+	{
+		return true;
+	}
+
 };

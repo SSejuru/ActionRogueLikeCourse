@@ -54,7 +54,7 @@ void ASMagicProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedC
 		{
 			Explode();
 
-			if (ActionComp) {
+			if (ActionComp && HasAuthority()) {
 				ActionComp->AddAction(GetInstigator(), EffectToApply);
 			}
 		}
