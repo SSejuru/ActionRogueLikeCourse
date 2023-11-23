@@ -4,13 +4,16 @@
 #include "Gamemodes/SGameModeBase.h"
 
 #include "EngineUtils.h"
+#include "SActionComponent.h"
 #include "SAttributeComponent.h"
 #include "SCharacter.h"
 #include "SGameplayInterface.h"
+#include "SMonsterData.h"
 #include "AI/SAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "SPlayerState.h"
 #include "SSaveGame.h"
+#include "Engine/AssetManager.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
@@ -38,6 +41,13 @@ void ASGameModeBase::StartPlay()
 void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
+
+	FString SelectedSaveSlot = UGameplayStatics::ParseOption(Options, "SaveGame");
+
+	if(SelectedSaveSlot.Len() > 0)
+	{
+		SlotName = SelectedSaveSlot;
+	}
 
 	LoadSaveGame();
 }
@@ -95,16 +105,16 @@ void ASGameModeBase::SpawnBotTimerElapsed()
 
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
 
-	if(ensure(QueryInstance))
+	if (ensure(QueryInstance))
 		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ASGameModeBase::OnQueryCompleted);
 
 }
 
 
 void ASGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
-                                      EEnvQueryStatus::Type QueryStatus)
+	EEnvQueryStatus::Type QueryStatus)
 {
-	if (QueryStatus != EEnvQueryStatus::Success) 
+	if (QueryStatus != EEnvQueryStatus::Success)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Spawn Bot EQS Query Failed!"));
 		return;
@@ -113,18 +123,64 @@ void ASGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryIn
 
 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
 
-	if(Locations.IsValidIndex(0))
+	if (Locations.IsValidIndex(0))
 	{
-		GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0], FRotator::ZeroRotator);
+		if (MonsterTable)
+		{
+			TArray<FMonsterInfoRow*> Rows;
+			MonsterTable->GetAllRows("", Rows);
+
+			//Get Random Enemy
+			int32 RandomIndex = FMath::RandRange(0, Rows.Num() - 1);
+			FMonsterInfoRow* SelectedRow = Rows[RandomIndex];
+
+			UAssetManager* AssetManager = UAssetManager::GetIfValid();
+
+			if (AssetManager)
+			{
+				TArray<FName> Bundles;
+				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ASGameModeBase::OnMonsterLoaded, SelectedRow->MonsterId, Locations[0]);
+
+				AssetManager->LoadPrimaryAsset(SelectedRow->MonsterId, Bundles, Delegate);
+			}
+
+		}
+
 	}
 
+}
+
+void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector Location)
+{
+	UAssetManager* AssetManager = UAssetManager::GetIfValid();
+
+	if (AssetManager)
+	{
+		USMonsterData* MonsterData = Cast<USMonsterData>(AssetManager->GetPrimaryAssetObject(LoadedId));
+
+		if (MonsterData)
+		{
+			AActor* NewBot = GetWorld()->SpawnActor<AActor>(MonsterData->MonsterClass, Location, FRotator::ZeroRotator);
+			if (NewBot)
+			{
+				USActionComponent* ActionComp = Cast<USActionComponent>(NewBot->GetComponentByClass(USActionComponent::StaticClass()));
+				if (ActionComp)
+				{
+					for (TSubclassOf<USAction> ActionClass : MonsterData->Actions)
+					{
+						ActionComp->AddAction(NewBot, ActionClass);
+					}
+				}
+			}
+		}
+	}
 }
 
 
 void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 {
 	ASCharacter* Player = Cast<ASCharacter>(VictimActor);
-	if(Player)
+	if (Player)
 	{
 		FTimerHandle TimerHandle_RespawnDelay;
 		FTimerDelegate Delegate;
@@ -135,11 +191,11 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 
 	//GiveCredits for kill
 	APawn* KillerPawn = Cast<APawn>(Killer);
-	if (KillerPawn) 
+	if (KillerPawn)
 	{
 		ASPlayerState* PS = KillerPawn->GetPlayerState<ASPlayerState>();
-		
-		if (PS) 
+
+		if (PS)
 		{
 			PS->AddCredits(CreditsPerKill);
 		}
@@ -150,7 +206,7 @@ void ASGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* N
 {
 	ASPlayerState* PlayerState = NewPlayer->GetPlayerState<ASPlayerState>();
 
-	if(PlayerState)
+	if (PlayerState)
 	{
 		PlayerState->LoadPlayerState(CurrentSavedGame);
 	}
@@ -160,19 +216,20 @@ void ASGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* N
 
 void ASGameModeBase::RespawnPlayerElapsed(AController* Controller)
 {
-	if(ensure(Controller))
+	if (ensure(Controller))
 	{
 		Controller->UnPossess();
 		RestartPlayer(Controller);
 	}
 }
 
+
 void ASGameModeBase::WriteSaveGame()
 {
-	for(int32 i = 0; i < GameState->PlayerArray.Num(); i++)
+	for (int32 i = 0; i < GameState->PlayerArray.Num(); i++)
 	{
 		ASPlayerState* PS = Cast<ASPlayerState>(GameState->PlayerArray[i]);
-		if(PS)
+		if (PS)
 		{
 			PS->SavePlayerState(CurrentSavedGame);
 
@@ -182,10 +239,10 @@ void ASGameModeBase::WriteSaveGame()
 
 	CurrentSavedGame->SavedActors.Empty();
 
-	for(FActorIterator It(GetWorld()); It; ++It)
+	for (FActorIterator It(GetWorld()); It; ++It)
 	{
 		AActor* Actor = *It;
-		if(!Actor->Implements<USGameplayInterface>())
+		if (!Actor->Implements<USGameplayInterface>())
 		{
 			continue;
 		}
@@ -234,7 +291,7 @@ void ASGameModeBase::LoadSaveGame()
 
 			for (FActorSaveData ActorData : CurrentSavedGame->SavedActors)
 			{
-				if(ActorData.ActorName == Actor->GetName())
+				if (ActorData.ActorName == Actor->GetName())
 				{
 					Actor->SetActorTransform(ActorData.Transform);
 
@@ -253,12 +310,13 @@ void ASGameModeBase::LoadSaveGame()
 			}
 		}
 
-	}else
+	}
+	else
 	{
 		CurrentSavedGame = Cast<USSaveGame>(UGameplayStatics::CreateSaveGameObject(USSaveGame::StaticClass()));
 
 		UE_LOG(LogTemp, Log, TEXT("Created new Saved Data"));
 	}
 
-	
+
 }

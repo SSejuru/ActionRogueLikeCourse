@@ -16,7 +16,12 @@ public:
 	// Sets default values for this actor's properties
 	ASPowerupBase();
 
+	virtual FText GetInteractMessage_Implementation(APawn* InstigatorActor) override;
+
 protected:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Power Up")
+	float CreditCost;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Power Up")
 	bool bCanActivateTroughCollision;

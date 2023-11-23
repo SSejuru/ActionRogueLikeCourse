@@ -24,15 +24,6 @@ public:
 	// Sets default values for this character's properties
 	ASCharacter();
 
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<ASProjectileBase> ProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<ASProjectileBase> PrimarySkillProjectile;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<ASProjectileBase> SecondarySkillProjectile;
-
 protected:
 
 	UPROPERTY(VisibleAnywhere)

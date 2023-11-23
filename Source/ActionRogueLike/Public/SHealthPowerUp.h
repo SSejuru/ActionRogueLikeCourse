@@ -22,7 +22,11 @@ protected:
 
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
+	virtual FText GetInteractMessage_Implementation(APawn* InstigatorActor) override;
+
 	UPROPERTY(EditDefaultsOnly)
 	float HealAmmount;
+
+
 
 };

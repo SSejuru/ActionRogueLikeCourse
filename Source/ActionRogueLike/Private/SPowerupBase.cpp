@@ -17,11 +17,13 @@ ASPowerupBase::ASPowerupBase()
 	bIsPowerupActive = false;
 	bCanActivateTroughCollision = false;
 
-	SetReplicates(true);
+	bReplicates = true;
 }
 
+
+
 void ASPowerupBase::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                            UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(OtherActor && bCanActivateTroughCollision)
 	{
@@ -47,6 +49,11 @@ void ASPowerupBase::Interact_Implementation(APawn* InstigatorPawn)
 	MeshComp->SetVisibility(false);
 	GetWorldTimerManager().SetTimer(Restart_TimerHandle, this, &ASPowerupBase::RestartPowerUp, ReactivationTime);
 	bIsPowerupActive = true;
+}
+
+FText ASPowerupBase::GetInteractMessage_Implementation(APawn* InstigatorActor)
+{
+	return FText::GetEmpty();
 }
 
 void ASPowerupBase::RestartPowerUp()
